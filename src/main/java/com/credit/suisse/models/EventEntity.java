@@ -18,8 +18,6 @@ public class EventEntity {
 	@Column(name = "event_host")
 	private String host;
 
-	// private String timestamp;
-
 	@Column(name = "event_duration")
 	private Long eventDuration;
 

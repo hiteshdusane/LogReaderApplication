@@ -16,7 +16,7 @@ public class UserInputServiceImpl implements UserInputService {
 		Scanner sc = new Scanner(System.in);
 		LOGGER.info("\n Enter file path with file name then press enter :: ");
 		String filePath = sc.nextLine();
-		LOGGER.info("You have Entered -> '{}' <- this file path", filePath);
+		LOGGER.debug("File path entered -> '{}'", filePath);
 		sc.close();
 		return filePath;
 	}

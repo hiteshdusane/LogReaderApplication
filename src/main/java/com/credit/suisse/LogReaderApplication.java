@@ -38,8 +38,6 @@ public class LogReaderApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		LOGGER.info("Welcome, this is Command Line Spring Boot Application...");
-		
 		String filePath = userInputService.acceptFilePathFromUser();
 
 		List<Event> events = eventsService.getEventsFromFile(filePath);
@@ -51,8 +49,6 @@ public class LogReaderApplication implements CommandLineRunner {
 		}
 
 		List<EventEntity> eventsSummary = eventsService.getEventWiseData(events);
-
-		
 
 		List<EventEntity> savedEvents = eventsEntityService.saveEvents(eventsSummary);
 		LOGGER.info("Number of all events saved to database:: '{}'", savedEvents.size());

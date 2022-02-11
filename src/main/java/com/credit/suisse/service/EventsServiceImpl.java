@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
+
 import com.credit.suisse.constants.EventConstants;
 import com.credit.suisse.models.Event;
 import com.credit.suisse.models.EventEntity;
@@ -24,8 +26,11 @@ public class EventsServiceImpl implements EventsService {
 
 	@Override
 	public List<Event> getEventsFromFile(String filePath) throws FileNotFoundException {
-		LOGGER.info("Fetching events from file....");
-		final long start = System.currentTimeMillis();
+
+		StopWatch sw = new StopWatch();
+
+		LOGGER.info("Fetching events from file...");
+		sw.start();
 		Gson gson = new Gson();
 		List<Event> events = new ArrayList<>();
 		try {
@@ -40,11 +45,12 @@ public class EventsServiceImpl implements EventsService {
 
 				}
 			}
-			LOGGER.info("Events fetched from file");
+			sw.stop();
+			LOGGER.info("Events fetched from file in {} milliseconds", sw.getTotalTimeMillis());
 
 		} catch (FileNotFoundException e) {
 
-			LOGGER.error("File not found...");
+			LOGGER.error("File not found... '{}'", e.getMessage());
 			LOGGER.error("Please enter valid file path...");
 			throw new FileNotFoundException("Please enter valid file path");
 
@@ -54,7 +60,6 @@ public class EventsServiceImpl implements EventsService {
 
 		}
 
-		LOGGER.debug("Elapsed time: {}", (System.currentTimeMillis() - start));
 		return events;
 
 	}
@@ -64,12 +69,14 @@ public class EventsServiceImpl implements EventsService {
 
 		LOGGER.info("Calculating event duration");
 		List<EventEntity> eventWiseList = new ArrayList<>();
+		StopWatch sw = new StopWatch();
 
 		ConcurrentMap<String, Event> startedEventsMap = events.stream()
 				.filter(e -> EventConstants.EVENT_STATE_STARTED.equalsIgnoreCase(e.getState()))
 				.collect(Collectors.toConcurrentMap(Event::getId, Function.identity(), (e, n) -> {
 					return e;
 				}));
+		LOGGER.debug("Number of started events '{}'", startedEventsMap.size());
 
 		events.parallelStream().filter(e -> EventConstants.EVENT_STATE_FINISHED.equalsIgnoreCase(e.getState()))
 				.forEach(e -> {
@@ -82,7 +89,9 @@ public class EventsServiceImpl implements EventsService {
 					eventEntity.setAlert(eventEntity.getEventDuration() > 4);
 					eventWiseList.add(eventEntity);
 				});
-		LOGGER.info("Events duration calculated");
+
+		sw.stop();
+		LOGGER.info("Events duration calculated in '{}' milliseconds", sw.getTotalTimeMillis());
 
 		return eventWiseList;
 	}

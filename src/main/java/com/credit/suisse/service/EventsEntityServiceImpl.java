@@ -24,6 +24,7 @@ public class EventsEntityServiceImpl implements EventsEntityService {
 		LOGGER.info("Saving Events to databse");
 
 		List<EventEntity> savedEvents = eventsRepository.saveAll(events);
+		LOGGER.debug("'{}' events persisted in database ", savedEvents.size());
 
 		LOGGER.info("Events saved to databse successfully");
 
