@@ -70,6 +70,7 @@ public class EventsServiceImpl implements EventsService {
 		LOGGER.info("Calculating event duration");
 		List<EventEntity> eventWiseList = new ArrayList<>();
 		StopWatch sw = new StopWatch();
+		sw.start();
 
 		ConcurrentMap<String, Event> startedEventsMap = events.stream()
 				.filter(e -> EventConstants.EVENT_STATE_STARTED.equalsIgnoreCase(e.getState()))
